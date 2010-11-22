@@ -4,6 +4,8 @@ import java.awt.*;
 import java.util.*;
 import java.util.Timer;
 import java.awt.event.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.security.Security;
 import javax.mail.*;
 import javax.swing.*;
@@ -11,12 +13,17 @@ import javax.mail.internet.*;
 import javax.activation.FileDataSource;
 import javax.swing.JMenuItem;
 
-public class EmailClient extends JFrame {
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+
+public class EmailClient extends JFrame 
+{
 	//ProfileDialog pd = new ProfileDialog();
 	protected JMenuBar jJMenuBar = null;
 	protected JMenu jMenuFile = null;
 	protected JMenu jMenuHelp = null;
 	protected JMenuItem jMenuItemOption = null;
+	protected JMenuItem jMenuItemSetTime = null;
 	protected JMenuItem jMenuItemExit = null;
 	protected JTabbedPane jTabbedPane = null;
 	protected JPanel jPanel = null;
@@ -53,6 +60,7 @@ public class EmailClient extends JFrame {
 	private JScrollPane jScrollPane1 = null;
 	protected static JTextArea jTextArea1 = null;
 	private JButton jButtonReceive = null;
+	private JButton jButtonPlayFlash = null;
 	private JMenu jMenuTools = null;
 	private JMenuItem jMenuItemoOption = null;
 	private JDialog jDialogOption = null;
@@ -113,8 +121,33 @@ public class EmailClient extends JFrame {
 	//setTimer
 	public void setAutoRecievemail()
 	{
-        timer = new Timer();
-        timer.schedule(new Receive(), 1000000, 1000000);
+        String default_time = null;
+       
+		try {
+			Properties p = new Properties();
+			FileInputStream in;
+			in = new FileInputStream("profile.properties");
+			p.load(in);
+			default_time = p.getProperty("recievetimer");
+			in.close();
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		int idefault_time = Integer.parseInt(default_time) ;
+		
+		if (idefault_time == 0)
+		{
+			closeAutoRecievemail();
+		}
+		else
+		{
+	        timer = new Timer();
+	        //Receive.ReceiveMail()
+	        timer.schedule(new Receive(), idefault_time*60*1000, idefault_time*60*1000);
+		}
 	}
 	
 	//closeTimer
@@ -122,6 +155,7 @@ public class EmailClient extends JFrame {
 	{
 		timer.cancel();
 	}
+	
 	public JMenuBar getJJMenuBar() {
 		if (jJMenuBar == null) {
 			jJMenuBar = new JMenuBar();
@@ -136,6 +170,7 @@ public class EmailClient extends JFrame {
 		if (jMenuFile == null) {
 			jMenuFile = new JMenu();
 			jMenuFile.add(getJMenuItemOption());
+			jMenuFile.add(getJMenuItemSetTime());
 			jMenuFile.add(getJMenuItemExit());
 			jMenuFile.setText("檔案(F)");
 			jMenuFile.setMnemonic(java.awt.event.KeyEvent.VK_F);
@@ -156,7 +191,7 @@ public class EmailClient extends JFrame {
 	public JMenuItem getJMenuItemOption() {
 		if (jMenuItemOption == null) {
 			jMenuItemOption = new JMenuItem();
-			jMenuItemOption.setText("設定");
+			jMenuItemOption.setText("系統設定");
 			jMenuItemOption
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -174,6 +209,27 @@ public class EmailClient extends JFrame {
 		return jMenuItemOption;
 	}
 
+	public JMenuItem getJMenuItemSetTime() {
+		if (jMenuItemSetTime == null) {
+			jMenuItemSetTime = new JMenuItem();
+			jMenuItemSetTime.setText("自動收信");
+			jMenuItemSetTime
+					.addActionListener(new java.awt.event.ActionListener() {
+						public void actionPerformed(java.awt.event.ActionEvent e) {
+							SetTimeDialog pd = new SetTimeDialog();
+							Dimension dlgSize = pd.getPreferredSize();
+							Dimension frmSize = getSize();
+							Point loc = getLocation();
+							pd.setLocation((frmSize.width - dlgSize.width) / 2
+									+ loc.x, (frmSize.height - dlgSize.height)
+									/ 2 + loc.y);
+							pd.show();
+						}
+					});
+		}
+		return jMenuItemSetTime;
+	}	
+	
 	public JMenuItem getJMenuItemExit() {
 		if (jMenuItemExit == null) {
 			jMenuItemExit = new JMenuItem();
@@ -352,6 +408,7 @@ public class EmailClient extends JFrame {
 			jLabelMailTotal.setBounds(new Rectangle(350, 1, 120, 15));
 			jPanel7 = new JPanel();
 			jPanel7.setLayout(null);
+			jPanel7.add(getJButtonPlayFlash(), null);
 			jPanel7.add(getJButtonReceive(), null);
 			jPanel7.add(getJButtonSend(), null);
 			jPanel7.add(getJButtonClear(), null);
@@ -586,6 +643,39 @@ public class EmailClient extends JFrame {
 		}
 		return jTextArea1;
 	}
+	
+	private JButton getJButtonPlayFlash()
+	{
+		if (jButtonPlayFlash == null) {
+			jButtonPlayFlash = new JButton();
+			jButtonPlayFlash.setBounds(new Rectangle(350, 0, 58, 33));
+			jButtonPlayFlash.setMnemonic(KeyEvent.VK_R);
+			jButtonPlayFlash.setIcon(new ImageIcon("images/Receive.png"));
+			jButtonPlayFlash.setToolTipText("PlayFlash(R)");
+			jButtonPlayFlash
+					.addActionListener(new java.awt.event.ActionListener() {
+						public void actionPerformed(java.awt.event.ActionEvent e) {
+							try {
+							      Display display = new Display();
+							      Shell shell = new PlayFlash().open (display);
+							      int i=0;
+							      while (!shell.isDisposed()) 
+							      {
+							    	  if (i>400) break;
+							         if (!display.readAndDispatch()) display.sleep ();
+							         i++;
+							      }
+							      display.dispose();
+								
+							} catch (Exception ec) {
+							}
+						}
+					});
+			jButtonPlayFlash.setMnemonic(java.awt.event.KeyEvent.VK_R);
+		}
+		return jButtonPlayFlash;
+		
+	}
 
 	private JButton getJButtonReceive() {
 		if (jButtonReceive == null) {
@@ -598,7 +688,7 @@ public class EmailClient extends JFrame {
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(java.awt.event.ActionEvent e) {
 							try {
-								EmailClient.jLabelStatus.setText("郵件接收中...請稍後");
+								//EmailClient.jLabelStatus.setText("郵件接收中...請稍後");
 								Receive.ReceiveMail();
 							} catch (Exception ec) {
 							}

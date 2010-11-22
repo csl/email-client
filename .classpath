@@ -5,5 +5,8 @@
 	<classpathentry kind="lib" path="lib/activation.jar"/>
 	<classpathentry kind="lib" path="lib/jmf.jar"/>
 	<classpathentry kind="lib" path="lib/mail.jar"/>
+	<classpathentry kind="lib" path="C:/workspace/email-client/lib/flash.jar"/>
+	<classpathentry kind="lib" path="C:/workspace/email-client/lib/swt.jar"/>
+	<classpathentry kind="lib" path="C:/workspace/email-client/lib/swt-debug.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
