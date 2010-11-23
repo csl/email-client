@@ -1,8 +1,0 @@
-#Tue Nov 23 09:51:27 CST 2010
-pop.port=995
-password=19890619
-smtp.port=465
-pop.host=pop.gmail.com
-smtp.host=smtp.gmail.com
-recievetimer=0
-username=bruce4339

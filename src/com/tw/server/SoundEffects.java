@@ -9,7 +9,7 @@ import javax.media.NoPlayerException;
 import javax.media.Player;
 
 public class SoundEffects {
-	private static String path = "wav\\download-complete.wav";
+	private static String path = "wav\\mail_comein.wav";
 	public static void SoundEffects() {
 		File f1 = new File(path);
 		try {
