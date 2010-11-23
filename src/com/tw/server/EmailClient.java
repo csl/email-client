@@ -158,6 +158,7 @@ public class EmailClient extends JFrame
 	{
 		if (active == 1)
 			timer.cancel();
+			timer = new Timer();
 			active = 0;
 	}
 	
