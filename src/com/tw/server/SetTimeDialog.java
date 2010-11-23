@@ -20,6 +20,8 @@ public class SetTimeDialog extends JFrame
 	
 	private JButton jButtonOK = null;
 	private JButton jButtonCancel = null;
+	
+	EmailClient ec;
 
 	//save other configure
 	String smtpp;
@@ -29,11 +31,17 @@ public class SetTimeDialog extends JFrame
 	String user;
 	String password;
 
-	public SetTimeDialog() {
+	public SetTimeDialog() 
+	{
 		initialize();
 		loadProperties();
 	}
-
+	
+	public void SetEmaiClient(EmailClient e)
+	{
+		if (ec != null) ec = e;
+	}
+	
 	public void initialize() {
 		this.setSize(200, 150);
 		this.setResizable(false);
@@ -172,6 +180,7 @@ public class SetTimeDialog extends JFrame
             p.setProperty("pop.host", poph) ;
             p.setProperty("pop.port", popp) ;
             p.setProperty("username", user) ;
+            p.setProperty("password", password) ;
 
             //save time
 			String item= (String) jComboBoxTime.getSelectedItem();
@@ -221,56 +230,60 @@ public class SetTimeDialog extends JFrame
 			jComboBoxTime.addItem("180");
 
             if (default_time.equals("0"))
-            	jComboBoxTime.setSelectedItem(0);
+            	jComboBoxTime.setSelectedIndex(0);
             else
             {
             	if (default_time.equals("1"))
             	{
-                	jComboBoxTime.setSelectedItem(1);
+                	jComboBoxTime.setSelectedIndex(1);
             	}
             	else if (default_time.equals("5"))
             	{
-                	jComboBoxTime.setSelectedItem(2);
+                	jComboBoxTime.setSelectedIndex(2);
             	}
             	else if (default_time.equals("10"))
             	{
-                	jComboBoxTime.setSelectedItem(3);
+                	jComboBoxTime.setSelectedIndex(3);
             	}
             	else if (default_time.equals("30"))
             	{
-                	jComboBoxTime.setSelectedItem(4);
+                	jComboBoxTime.setSelectedIndex(4);
             	}
             	else if (default_time.equals("60"))
             	{
-                	jComboBoxTime.setSelectedItem(5);
+                	jComboBoxTime.setSelectedIndex(5);
             	}
             	else if (default_time.equals("120"))
             	{
-                	jComboBoxTime.setSelectedItem(6);
+                	jComboBoxTime.setSelectedIndex(6);
             	}
             	else if (default_time.equals("180"))
             	{
-                	jComboBoxTime.setSelectedItem(7);
+                	jComboBoxTime.setSelectedIndex(7);
             	}
             }
-			
-
+            
 			in.close() ;
 		} catch (Exception ex) {
 			System.out.println(ex.getMessage());
 		}
 	}
 	
-    public void actionPerformed(java.awt.event.ActionEvent evt) {
-		if (evt.getSource() == jButtonOK) {
+    public void actionPerformed(java.awt.event.ActionEvent evt) 
+    {
+		if (evt.getSource() == jButtonOK) 
+		{
             saveProperties();
+            ec.setAutoRecievemail();
         }
-        else if (evt.getSource() == jButtonCancel) {
+        else if (evt.getSource() == jButtonCancel) 
+        {
             cancel();
         }
     }
 	
-	public void cancel() {
+	public void cancel() 
+	{
         dispose();
     }
 }

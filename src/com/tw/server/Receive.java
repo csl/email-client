@@ -1,9 +1,12 @@
 package com.tw.server;
 
 import javax.mail.*;
-import java.util.*;
 import javax.mail.internet.*;
 import javax.swing.JOptionPane;
+
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+
 import java.io.*;
 import java.security.*;
 import java.awt.Component;
@@ -12,26 +15,13 @@ import java.text.SimpleDateFormat;
 //import sun.misc.BASE64Decoder;
 //import sun.misc.BASE64Encoder;
 
-public class Receive extends TimerTask
-{
+public class Receive {
 	private static String[] mFrom = new String[255];
 	private static String[] mDate = new String[255];
 	private static String[] mBody = new String[255];
 	private static String[] mSubject = new String[255];
 	private static int total;
 	protected static Message[] messages;
-	
-	//run routine
-	public void run() 
-	{
-		try {
-			this.ReceiveMail();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    }	
-	
 	public static void ReceiveMail() throws Exception 
 	{
 		
@@ -97,9 +87,10 @@ public class Receive extends TimerTask
 			if(messages.length == 0) {
 				EmailClient.jLabelMailStatus.setText("目前郵件：" + (total) + " / " + 
 					messages.length);
-				//se.SoundEffects();
-				JOptionPane.showMessageDialog((Component) null, "沒有新郵件！", "訊息", 
-					JOptionPane.WARNING_MESSAGE);
+//				JOptionPane.showMessageDialog((Component) null, "沒有新郵件！", "訊息", 
+	//				JOptionPane.WARNING_MESSAGE);
+				EmailClient.jLabelStatus.setText("沒有新郵件！, 郵件接收完成");
+
 			} else {
 				EmailClient.jLabelMailStatus.setText("目前郵件：" + (total+1) + " / " + 
 					messages.length);
@@ -110,7 +101,22 @@ public class Receive extends TimerTask
 				if(messages.length == 1||messages.length == 0) {
 					EmailClient.jButtonArrowRight.setEnabled(false);
 				} else { EmailClient.jButtonArrowRight.setEnabled(true); }
+
+				//PlaySound
 				se.SoundEffects();
+				
+				//Play flash for tips
+			    Display display = new Display();
+			    Shell shell = new PlayFlash().open (display);
+			    int i=0;
+			    while (!shell.isDisposed()) 
+			    {
+			     if (i>400) break;
+			       if (!display.readAndDispatch()) display.sleep ();
+			       i++;
+			    }
+			      display.dispose();
+
 				JOptionPane.showMessageDialog((Component) null, "郵件接收完成！", "訊息",
 					JOptionPane.WARNING_MESSAGE);
 				EmailClient.jLabelStatus.setText("郵件接收完成");

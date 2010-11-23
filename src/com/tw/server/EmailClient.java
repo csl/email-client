@@ -91,6 +91,7 @@ public class EmailClient extends JFrame
 	private JMenuItem jMenuCalendar = null;
 
 	private Timer timer;
+	private int active;
 	
 	public EmailClient() 
 	{
@@ -103,9 +104,11 @@ public class EmailClient extends JFrame
 		this.setSize(508, 558);
 		this.setContentPane(getJPanel5());
 		this.setJMenuBar(getJJMenuBar());
-		this.setTitle("E-mail Client v1.05");
+		this.setTitle("E-mail Client v1.2");
 		this.setResizable(false);
 		
+		timer = new Timer();
+		active = 0;
 		try
 		{
 		ClassLoader cl = this.getClass().getClassLoader();
@@ -116,6 +119,8 @@ public class EmailClient extends JFrame
 		{
 			
 		}
+		
+		setAutoRecievemail();
 	}
 	
 	//setTimer
@@ -128,6 +133,7 @@ public class EmailClient extends JFrame
 			FileInputStream in;
 			in = new FileInputStream("profile.properties");
 			p.load(in);
+			
 			default_time = p.getProperty("recievetimer");
 			in.close();
 			
@@ -138,22 +144,21 @@ public class EmailClient extends JFrame
 		
 		int idefault_time = Integer.parseInt(default_time) ;
 		
-		if (idefault_time == 0)
+		closeAutoRecievemail();
+		if (idefault_time != 0)
 		{
-			closeAutoRecievemail();
-		}
-		else
-		{
-	        timer = new Timer();
 	        //Receive.ReceiveMail()
-	        timer.schedule(new Receive(), idefault_time*60*1000, idefault_time*60*1000);
+	        timer.schedule(new timeouthandler(), idefault_time*60*1000, idefault_time*60*1000);
+	        active = 1;
 		}
 	}
 	
 	//closeTimer
 	public void closeAutoRecievemail()
 	{
-		timer.cancel();
+		if (active == 1)
+			timer.cancel();
+			active = 0;
 	}
 	
 	public JMenuBar getJJMenuBar() {
@@ -408,7 +413,7 @@ public class EmailClient extends JFrame
 			jLabelMailTotal.setBounds(new Rectangle(350, 1, 120, 15));
 			jPanel7 = new JPanel();
 			jPanel7.setLayout(null);
-			jPanel7.add(getJButtonPlayFlash(), null);
+			//jPanel7.add(getJButtonPlayFlash(), null);
 			jPanel7.add(getJButtonReceive(), null);
 			jPanel7.add(getJButtonSend(), null);
 			jPanel7.add(getJButtonClear(), null);
@@ -1058,7 +1063,24 @@ public class EmailClient extends JFrame
 		}
 		return jMenuCalendar;
 	}
+	
+	public class timeouthandler extends TimerTask
+	{
+		//run routine
+		public void run() 
+		{
+			try {
+				EmailClient.jLabelStatus.setText("");
+				Receive.ReceiveMail();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	    }	
+	}
 
+	
+	
 	public static void main(String[] args) 
 	{
 		EmailClient app = new EmailClient(); // 建立Swing應用程式
@@ -1082,4 +1104,6 @@ public class EmailClient extends JFrame
 				(screenSize.height - frameSize.height) / 2);
 		app.setVisible(true); // 顯示視窗	
 	}
+	
 }
+
